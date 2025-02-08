@@ -1,32 +1,45 @@
-"use client"
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+"use client";
 
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 // Define User type based on your schema
 interface User {
+  id: string;
   username: string;
   email: string;
-  refreshToken?: string;
+  profilePic?: string;
+  role?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
+// Define the expected login response structure
+interface LoginResponse {
+  data: {
+    user: User;
+    accessToken: string;
+  };
+  message: string;
+}
+
 // Define the context type
 interface AuthContextType {
-  login: (username: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   user: User | null;
   isLoading: boolean;
 }
 
-// Create the context with initial undefined value
+// Create the context with an initial undefined value
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Create a custom hook to use the auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -36,119 +49,64 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Check for existing session on mount
-  useEffect(() => {
-    const checkAuth = () => {
-      const storedUser = localStorage.getItem('user');
-      const storedTime = localStorage.getItem('lastActive');
-      
-      if (storedUser && storedTime) {
-        const lastActive = new Date(storedTime);
-        const now = new Date();
-        const diffInDays = (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24);
-        
-        if (diffInDays < 7) {
-          setUser(JSON.parse(storedUser));
-          setIsAuthenticated(true);
-          updateLastActive();
-        } else {
-          // Clear expired session
-          logout();
-        }
-      }
-      setIsLoading(false);
-    };
-
-    checkAuth();
-  }, []);
-
+  
+  // Function to update last active timestamp
   const updateLastActive = () => {
-    localStorage.setItem('lastActive', new Date().toISOString());
+    localStorage.setItem("lastActive", new Date().toISOString());
   };
 
-  // Update last active timestamp on any activity
   useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
-    
-    const handleActivity = () => {
-      updateLastActive();
-    };
-
-    events.forEach(event => {
-      window.addEventListener(event, handleActivity);
-    });
-
-    // Check session validity every minute
-    const interval = setInterval(() => {
-      const lastActive = localStorage.getItem('lastActive');
-      if (lastActive) {
-        const lastActiveDate = new Date(lastActive);
-        const now = new Date();
-        const diffInDays = (now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60 * 24);
-        
-        if (diffInDays >= 7) {
-          logout();
-        }
-      }
-    }, 60000);
-
-    return () => {
-      events.forEach(event => {
-        window.removeEventListener(event, handleActivity);
-      });
-      clearInterval(interval);
-    };
+    if(isAuthenticated){
+      router.push('/');
+    }
+    else{
+      router.push('/login');
+    }
   }, [isAuthenticated]);
 
-  const login = async (username: string, password: string) => {
+  const login = async (identifier: string, password: string) => {
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      const userData: User = await response.json();
-      
-      // Store user data and timestamp
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('lastActive', new Date().toISOString());
-      
-      setUser(userData);
+      const response = await axios.post(
+        "http://localhost:8000/users/login",
+        { username: identifier, password }
+      );
+  
+      const { user, accessToken } = response.data;
+  
+     
+      console.log(response.data);
       setIsAuthenticated(true);
+      setUser(user);
+      localStorage.setItem("isAuthenticated", "true");// Store user data and token in localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("accessToken", accessToken);
+      updateLastActive(); // Update last active time
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login failed:", error);
       throw error;
     }
   };
+  
+  
+  
 
+  // Logout function
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('lastActive');
+    localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("lastActive");
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      login, 
-      logout, 
-      isAuthenticated, 
-      user,
-      isLoading 
-    }}>
+    <AuthContext.Provider value={{ login, logout, isAuthenticated, user, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

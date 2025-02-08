@@ -141,7 +141,7 @@ const Navbar: React.FC = () => {
                     </button>
                     <button
                         className="hover:text-gray-400"
-                        onClick={() => router.push("/")}
+                        onClick={() => router.push("/login")}
                     >
                         Log out
                     </button>

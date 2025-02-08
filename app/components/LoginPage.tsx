@@ -8,21 +8,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from '@/app/context/AuthContext';
 
 const LoginPage: React.FC = () => {
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
   
-  useEffect(() => {
-    // If already authenticated, redirect to intended path or dashboard
-    if (isAuthenticated) {
-      const intendedPath = localStorage.getItem('intendedPath') || '/dashboard';
-      localStorage.removeItem('intendedPath'); // Clear it after use
-      router.push(intendedPath);
-    }
-  }, [isAuthenticated, router]);
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -39,7 +32,9 @@ const LoginPage: React.FC = () => {
     
     try {
       await login(formData.username, formData.password);
-      // Redirect will happen in useEffect
+      localStorage.setItem('intendedPath', '/');
+      router.push('/');
+
     } catch (error) {
       console.error('Login failed:', error);
     }

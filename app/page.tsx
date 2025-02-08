@@ -1,12 +1,12 @@
 
 import { AuthProvider } from './context/AuthContext';
 import './globals.css';
-import Login from './components/LoginPage';
+import HomePage from './home/page';
 
 const App = () => { 
   return (
     <AuthProvider>
-      <Login/>
+      <HomePage/>
     </AuthProvider>
   );
 };

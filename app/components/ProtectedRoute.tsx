@@ -15,7 +15,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      // Store the attempted URL to redirect back after login
       localStorage.setItem('intendedPath', pathname);
       router.push('/login');
     }
