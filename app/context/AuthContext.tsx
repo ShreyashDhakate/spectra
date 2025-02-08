@@ -50,7 +50,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+ 
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -62,13 +62,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
-    if(isAuthenticated){
-      router.push('/');
-    }
-    else{
+    const isAuthenticated = localStorage.getItem("isAuthenticated");
+    if(!isAuthenticated){
       router.push('/login');
     }
-  }, [isAuthenticated]);
+    
+  }, []);
 
   const login = async (identifier: string, password: string) => {
     try {
@@ -81,7 +80,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   
      
       console.log(response.data);
-      setIsAuthenticated(true);
+      
       setUser(user);
       localStorage.setItem("isAuthenticated", "true");// Store user data and token in localStorage
       localStorage.setItem("user", JSON.stringify(user));
@@ -98,15 +97,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Logout function
   const logout = () => {
-    setIsAuthenticated(false);
+    localStorage.setItem("isAuthenticated", "false");
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("lastActive");
   };
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   return (
-    <AuthContext.Provider value={{ login, logout, isAuthenticated, user, isLoading }}>
+    <AuthContext.Provider value={{ login, logout, isAuthenticated, user, isLoading }}> 
       {children}
     </AuthContext.Provider>
   );
