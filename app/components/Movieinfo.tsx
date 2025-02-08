@@ -60,7 +60,7 @@ const Movinfo = ({ id }: MovieInfoProps) => {
         {/* Poster */}
         <div className="relative overflow-hidden rounded-lg shadow-lg border border-gray-700">
           <img
-            src={movie.poster || "/thumb.webp"}
+            src={movie.poster || "/defaultposter.jpg"}
             alt={movie.title}
             className="w-full h-[350px] object-cover"
           />

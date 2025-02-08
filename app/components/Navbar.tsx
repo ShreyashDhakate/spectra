@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
               className="sugg flex items-center p-2 hover:bg-gray-600 cursor-pointer z-100" 
               key={s._id}
           >
-            <img src={s.poster || "/thumb.webp"} alt="poster" width={40} height={56} className="object-cover mr-3" />
+            <img src={s.poster || "/defaultposter.jpg"} alt="poster" width={40} height={56} className="object-cover mr-3" />
              
               <span className="text-sm">{s.title}</span>
           </div>

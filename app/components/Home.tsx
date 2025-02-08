@@ -153,7 +153,7 @@ const Dashboard = () => {
               <div key={movie._id} className="bg-gray-700 p-4 rounded-lg shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300" onClick={() => handleRedirect(movie._id)}>
                 <div
                   className="w-full h-72 bg-cover bg-center rounded-lg"
-                  style={{ backgroundImage: `url(${movie.poster})` }}
+                  style={{ backgroundImage: `url(${movie.poster || "/defaultposter.jpg"})` }}
                 ></div>
                 <h3 className="text-xl font-semibold mt-4">{movie.title}</h3>
                 <p className="text-gray-300">{movie.year} | {movie.genre.join(", ")}</p>

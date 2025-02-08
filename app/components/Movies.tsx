@@ -149,7 +149,7 @@ const MoviesPage: React.FC = () => {
             <div key={index} className="bg-gray-800 p-4 rounded-xl flex max-h-[16rem] hover:scale-105 hover:shadow-xl transition-all duration-300" onClick={() => handleRedirect(movie._id || ""    )}>
               <div className="w-1/3">
                 <img
-                  src={movie.poster || "https://via.placeholder.com/150"}   
+                  src={movie.poster || "/defaultposter.jpg"}   
                   alt={movie.title}
                   className="rounded-lg object-cover w-full h-full"
                 />

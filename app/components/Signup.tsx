@@ -36,10 +36,14 @@ const Signup: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch('/api/signup', {
+      const response = await fetch('http://localhost:8000/users/register', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Ensures the request is sent as JSON
+        },
         body: JSON.stringify(formData),
       });
+    
       if (response.ok) {
         toast.success("User Registered Successfully");
         setFormData({
@@ -50,10 +54,15 @@ const Signup: React.FC = () => {
         setTimeout(() => {
           router.push("/home");
         }, 2000);
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Registration failed");
       }
     } catch (error: unknown) {
       console.error('Signup error:', error);
+      toast.error("An error occurred during registration");
     }
+    
   };
   
   return (
