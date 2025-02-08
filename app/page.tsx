@@ -1,9 +1,9 @@
-import { AppProps } from 'next/app';
+
 import { AuthProvider } from './context/AuthContext';
 import './globals.css';
 import Login from './components/LoginPage';
 
-const App = ({ Component, pageProps }: AppProps) => {
+const App = () => { 
   return (
     <AuthProvider>
       <Login/>

@@ -1,17 +1,12 @@
-import { AppProps } from 'next/app';
-import { AuthProvider } from '../context/AuthContext';
-import '../globals.css';
+import React from 'react';
 import Home from '../components/Home';
 import Navbar from '../components/Navbar';
-
-
-const App = ({ Component, pageProps }: AppProps) => {
+// Use a simple page component
+export default function HomePage() {
   return (
-    <AuthProvider>
-        <Navbar/>
-      <Home/>
-    </AuthProvider>
+    <main>
+      <Navbar/>
+      <Home />
+    </main>
   );
-};
-
-export default App;
+}

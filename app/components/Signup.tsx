@@ -2,18 +2,22 @@
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { toast } from "react-toastify";
-import axios from "axios";
+
+
+interface FormData {
+  username: string;
+  email: string;
+  password: string;
+  // Add other form fields
+}
 
 const Signup: React.FC = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     username: "",
     email: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
-
-
 
   const handleLoginRedirect = () => {
     router.push('/');
@@ -27,46 +31,30 @@ const Signup: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-      if (!formData.username || !formData.email || !formData.password) {
-        toast.error("All fields are required");
-        return;
-      }
-      setLoading(true);
-      try {
-        const response = await axios.post(
-          `http://localhost:8000/users/register`,
-          formData,
-        );
-        // console.log("Registered ",response);
+    if (!formData.username || !formData.email || !formData.password) {
+      toast.error("All fields are required");
+      return;
+    }
+    try {
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
         toast.success("User Registered Successfully");
         setFormData({
           username: "",
           email: "",
           password: "",
         });
-        setLoading(false);
         setTimeout(() => {
           router.push("/home");
         }, 2000);
-      } catch (error: any) {
-        if (error.status == 409) {
-          toast.error("User already exists");
-          setFormData({
-            username: "",
-            email: "",
-            password: "",
-          });
-          return;
-        }
-        toast.error("Error in submitting form");
       }
-      setFormData({
-        username: "",
-        email: "",
-        password: "",
-      });
-      setLoading(false);
-    };
+    } catch (error: unknown) {
+      console.error('Signup error:', error);
+    }
+  };
   
   return (
     <div

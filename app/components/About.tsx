@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const About: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-[92vh] bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-16">
         <h1 className="text-4xl font-bold text-center mb-12">About MovieFlix</h1>
         
@@ -21,7 +21,7 @@ const About: React.FC = () => {
           <div className="md:w-1/2 md:pl-12">
             <h2 className="text-2xl font-semibold mb-4">Our Story</h2>
             <p className="text-gray-300 mb-6">
-              MovieFlix was born out of a passion for cinema and a desire to bring the magic of movies to everyone, everywhere. Founded in 2023, we've quickly grown to become one of the leading movie streaming platforms, offering a vast library of films from classic masterpieces to the latest blockbusters.
+              MovieFlix was born out of a passion for cinema and a desire to bring the magic of movies to everyone, everywhere. Founded in 2023, we&apos;ve quickly grown to become one of the leading movie streaming platforms, offering a vast library of films from classic masterpieces to the latest blockbusters.
             </p>
             <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
             <p className="text-gray-300 mb-6">

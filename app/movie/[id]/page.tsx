@@ -1,19 +1,18 @@
 "use client"
-import { AppProps } from 'next/app';
-import { AuthProvider } from '@/app/context/AuthContext';
-import '../../globals.css';
-import Movieinfo from '../../components/Movieinfo';
-import { useParams } from 'next/navigation';
+import MovieInfo from '@/app/components/Movieinfo';
 import Navbar from '@/app/components/Navbar';
+import { AuthProvider } from '@/app/context/AuthContext'; 
+import ProtectedRoute from '@/app/components/ProtectedRoute';
+import { useParams } from 'next/navigation';
 
-const App = ({ Component, pageProps }: AppProps) => {
+export default function MoviePage() {
   const { id } = useParams();
   return (
     <AuthProvider>
-      <Navbar/>
-      <Movieinfo id={id as string}/>
+      <ProtectedRoute>
+        <Navbar/>
+        <MovieInfo id={id as string}/>
+      </ProtectedRoute>
     </AuthProvider>
   );
-};
-
-export default App;
+}

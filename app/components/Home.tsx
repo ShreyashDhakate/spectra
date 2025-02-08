@@ -1,10 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+
+
+type Movie = {
+  _id: string;
+  title: string;
+  year: number;
+  genre: string[];
+  poster: string;
+};
 
 const Dashboard = () => {
   // Hardcoded banner movies
-  const bannerMovies = [
+  const bannerMovies = useMemo(() => [
     {
       _id: 1,
       title: "Banner Movie 1",
@@ -33,27 +43,17 @@ const Dashboard = () => {
       genre: ["Thriller"],
       poster: "movie2.jpg",
     },
-  ];
+  ], []);
 
   // State to manage the movies fetched from the database
-  const [movies, setMovies] = useState<any[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(true);
-  // Fetch movies for the grid from the database
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/movies");
-        setMovies(response.data);
-        setLoading(false); // Set loading to false once data is fetched
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      }
-    };
-    fetchMovies();
-  }, []);
-
+  
+  const router = useRouter();
+  const handleRedirect = (movieId: string) => {
+    router.push(`/movie/${movieId}`); 
+};
   // Automatic slider behavior
   useEffect(() => {
     if (bannerMovies.length) {
@@ -73,6 +73,23 @@ const Dashboard = () => {
   const handleNextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % bannerMovies.length);
   };
+
+  // Fetch movies for the grid from the database
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/movies");
+        setMovies(response.data);
+        setLoading(false); // Set loading to false once data is fetched
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      }
+    };
+    fetchMovies();
+  }, []);
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -119,7 +136,7 @@ const Dashboard = () => {
 
 
       {/* Movie List */}
-      <div className="px-6 py-8 bg-gray-800 mt-8">
+      <div className="px-6 py-8 bg-gray-900 mt-8">
         <h2 className="text-3xl font-semibold text-center mb-8">All Movies</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
           {loading ? (
@@ -133,7 +150,7 @@ const Dashboard = () => {
             ))
           ) : (
             movies.map((movie) => (
-              <div key={movie._id} className="bg-gray-700 p-4 rounded-lg shadow-lg">
+              <div key={movie._id} className="bg-gray-700 p-4 rounded-lg shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300" onClick={() => handleRedirect(movie._id)}>
                 <div
                   className="w-full h-72 bg-cover bg-center rounded-lg"
                   style={{ backgroundImage: `url(${movie.poster})` }}

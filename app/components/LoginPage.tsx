@@ -1,24 +1,33 @@
 "use client"
 
-import React, { useState, useContext } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AuthContext } from "@/app/context/AuthContext";
+import { useAuth } from '@/app/context/AuthContext';
 
 const LoginPage: React.FC = () => {
-  const { login } = useContext(AuthContext);
+  const { login, isAuthenticated } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    // If already authenticated, redirect to intended path or dashboard
+    if (isAuthenticated) {
+      const intendedPath = localStorage.getItem('intendedPath') || '/dashboard';
+      localStorage.removeItem('intendedPath'); // Clear it after use
+      router.push(intendedPath);
+    }
+  }, [isAuthenticated, router]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-  };
+  };  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,28 +36,13 @@ const LoginPage: React.FC = () => {
       return;
     }
     console.log(formData.username, formData.password);
-    setLoading(true);
+    
     try {
-      const response = await axios.post(`http://localhost:8000/users/Login`, formData);
-      const accessToken = response?.data?.data?.accessToken;
-      const user = response?.data?.data?.user;
-      localStorage.setItem("accessToken", accessToken);
-      login(accessToken, user);
-      setFormData({
-        username: "",
-        password: "",
-      });
-      toast.success("Succefully Logged In");
-      setTimeout(() => router.push("/home"), 2000);
+      await login(formData.username, formData.password);
+      // Redirect will happen in useEffect
     } catch (error) {
-      // console.log(error);
-      setFormData({
-        username: "",
-        password: "",
-      });
-      toast.error("Error in Logging In");
+      console.error('Login failed:', error);
     }
-    setLoading(false);
   };
 
   return (
@@ -115,7 +109,7 @@ const LoginPage: React.FC = () => {
         {/* Signup Redirect */}
         <p className="mt-[15px] text-sm text-center text-gray-[300] hover:text-white cursor-pointer underline"
            onClick={() => router.push('/signup')}>
-          Don't have an account? Sign up here!
+          Don&apos;t have an account? Sign up here!
         </p>
       </form>
     </div>

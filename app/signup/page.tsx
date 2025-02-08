@@ -1,12 +1,12 @@
-import { AppProps } from 'next/app';
+
 import { AuthProvider } from '../context/AuthContext';
 import '../globals.css';
-import Signup from '../components/Signup';
+import Signup from '@/app/components/Signup';
 
-const App = ({ Component, pageProps }: AppProps) => {
+const App = () => {
   return (
     <AuthProvider>
-      <Signup/>
+      <Signup />
     </AuthProvider>
   );
 };

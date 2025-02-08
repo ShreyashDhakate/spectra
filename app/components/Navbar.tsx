@@ -4,21 +4,17 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { FaSearch } from "react-icons/fa";
 import { MovieData } from "./types"; // Assuming you have defined types for Movie data
-
+import Image from 'next/image';
 // WebSocket URL
 const ws = new WebSocket("ws://localhost:8090");
 
-interface NavbarProps {
-    // Define any props here if required, for now, we're keeping it empty
-}
+// Define proper interface instead of empty one
 
-const Navbar: React.FC<NavbarProps> = () => {
+
+const Navbar: React.FC = () => {
     const [searchInput, setInput] = useState<string>(""); // Search input
     const [isClient, setIsClient] = useState<boolean>(false); // Flag for client-side rendering
     const [waiting, setWaiting] = useState<boolean>(false); // Flag for waiting state
-    const [suggBoxVisible, setSuggBoxVisible] = useState<boolean>(false); // Suggestion box visibility state
-    const [overlayState, setOverlayState] = useState<boolean>(false); // Overlay visibility state
-    const [searchResults, setSearchResults] = useState<Array<any>>([]); // Store search results, can define more specific type
     const [children, setChildren] = useState<React.ReactNode[]>([]); // JSX for movie suggestions
 
     const router = useRouter();
@@ -41,10 +37,12 @@ const Navbar: React.FC<NavbarProps> = () => {
               className="sugg flex items-center p-2 hover:bg-gray-600 cursor-pointer z-100" 
               key={s._id}
           >
-              <img 
-                  src={s.poster || "thumb.webp"} 
-                  alt="poster" 
-                  className="w-10 h-14 object-cover mr-3"
+              <Image
+                  src={s.poster || "/thumb.webp"}
+                  alt="poster"
+                  width={40}
+                  height={56}
+                  className="object-cover mr-3"
               />
               <span className="text-sm">{s.title}</span>
           </div>
@@ -75,10 +73,6 @@ const Navbar: React.FC<NavbarProps> = () => {
         // Send search query if input exists
         if (query) {
             ws.send(JSON.stringify({ t: "autoc", data: query }));
-        } else {
-            setSuggBoxVisible(false);
-            setChildren([]);
-            setOverlayState(false);
         }
     };
 
@@ -86,12 +80,6 @@ const Navbar: React.FC<NavbarProps> = () => {
     const gotomov = (id: string) => {
         ws.send(JSON.stringify({ t: "info", data: id }));
         setWaiting(true);
-    };
-
-    // Redirect to movie page
-    const handleRedirect = (movieId: string) => {
-        setInput(""); // Clear input
-        router.push(`/movie/${movieId}`); // Use Next.js router for navigation
     };
 
     // Handle client-side rendering
@@ -104,7 +92,7 @@ const Navbar: React.FC<NavbarProps> = () => {
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                     {/* Logo */}
-                    <div className="text-white text-2xl font-semibold">MovieDB</div>
+                    <div className="text-white text-2xl font-semibold">MovieFlix</div>
                 </div>
 
                 <div className="relative w-1/2">
