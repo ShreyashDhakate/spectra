@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { FaSearch } from "react-icons/fa";
 import { MovieData } from "./types"; // Assuming you have defined types for Movie data
-import Image from 'next/image';
+
 // WebSocket URL
 const ws = new WebSocket("ws://localhost:8090");
 
@@ -37,13 +37,8 @@ const Navbar: React.FC = () => {
               className="sugg flex items-center p-2 hover:bg-gray-600 cursor-pointer z-100" 
               key={s._id}
           >
-              <Image
-                  src={s.poster || "/thumb.webp"}
-                  alt="poster"
-                  width={40}
-                  height={56}
-                  className="object-cover mr-3"
-              />
+            <img src={s.poster || "/thumb.webp"} alt="poster" width={40} height={56} className="object-cover mr-3" />
+             
               <span className="text-sm">{s.title}</span>
           </div>
             ));
