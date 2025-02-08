@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { toast } from "react-toastify";
-
+import NotificationProvider from "./NotificationProvider";
 
 interface FormData {
   username: string;
@@ -20,7 +20,7 @@ const Signup: React.FC = () => {
   });
 
   const handleLoginRedirect = () => {
-    router.push('/');
+    router.push('/login');
   };
   
 
@@ -51,12 +51,13 @@ const Signup: React.FC = () => {
           email: "",
           password: "",
         });
+       
         setTimeout(() => {
           router.push("/home");
         }, 2000);
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Registration failed");
+     
+        toast.error("Registration failed");
       }
     } catch (error: unknown) {
       console.error('Signup error:', error);

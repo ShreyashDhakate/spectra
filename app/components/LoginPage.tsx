@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 
+
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,10 +34,12 @@ const LoginPage: React.FC = () => {
     try {
       await login(formData.username, formData.password);
       localStorage.setItem('intendedPath', '/');
+      toast.success("Login Successful");
       router.push('/');
-
+   
     } catch (error) {
       console.error('Login failed:', error);
+      toast.error("Login Failed");
     }
   };
 
