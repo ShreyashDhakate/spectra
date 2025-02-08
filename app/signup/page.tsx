@@ -5,9 +5,9 @@ import Signup from '@/app/components/Signup';
 
 const App = () => {
   return (
-    <AuthProvider>
+<div>
       <Signup />
-    </AuthProvider>
+      </div>
   );
 };
 
