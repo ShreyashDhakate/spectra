@@ -77,6 +77,14 @@ const Navbar: React.FC = () => {
         setWaiting(true);
     };
 
+    // Handle logout
+    const handleLogout = useCallback(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('token'); // Only access localStorage on client side
+            router.push('/login');
+        }
+    }, [router]);
+
     // Handle client-side rendering
     if (!isClient) {
         return null; // Return nothing until the component is client-side rendered
@@ -136,7 +144,7 @@ const Navbar: React.FC = () => {
                     </button>
                     <button
                         className="hover:text-gray-400"
-                        onClick={() => router.push("/login")}
+                        onClick={handleLogout}
                     >
                         Log out
                     </button>

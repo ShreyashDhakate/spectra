@@ -1,5 +1,4 @@
 
-import { AuthProvider } from '../context/AuthContext';
 import '../globals.css';
 import Signup from '@/app/components/Signup';
 import NotificationProvider from "@/app/components/NotificationProvider";

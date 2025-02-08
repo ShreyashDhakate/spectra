@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { toast } from "react-toastify";
-import NotificationProvider from "./NotificationProvider";
 
 interface FormData {
   username: string;

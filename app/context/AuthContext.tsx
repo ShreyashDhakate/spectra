@@ -14,14 +14,6 @@ interface User {
   updatedAt?: Date;
 }
 
-// Define the expected login response structure
-interface LoginResponse {
-  data: {
-    user: User;
-    accessToken: string;
-  };
-  message: string;
-}
 
 // Define the context type
 interface AuthContextType {
@@ -50,23 +42,26 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
- 
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  // Check for existing session on mount
-  
   // Function to update last active timestamp
   const updateLastActive = () => {
-    localStorage.setItem("lastActive", new Date().toISOString());
+    if (typeof window !== "undefined") {
+      localStorage.setItem("lastActive", new Date().toISOString());
+    }
   };
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem("isAuthenticated");
-    if(!isAuthenticated){
-      router.push('/login');
+    if (typeof window !== "undefined") {
+      const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+      setIsAuthenticated(isAuthenticated);
+      if (!isAuthenticated) {
+        router.push('/login');
+      }
     }
-    
+    setIsLoading(false);
   }, []);
 
   const login = async (identifier: string, password: string) => {
@@ -75,38 +70,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         "http://localhost:8000/users/login",
         { username: identifier, password }
       );
-  
+
       const { user, accessToken } = response.data;
-  
-     
-      console.log(response.data);
-      
+
       setUser(user);
-      localStorage.setItem("isAuthenticated", "true");// Store user data and token in localStorage
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("accessToken", accessToken);
-      updateLastActive(); // Update last active time
+      if (typeof window !== "undefined") {
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("accessToken", accessToken);
+        updateLastActive();
+      }
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
     }
   };
-  
-  
-  
 
-  // Logout function
   const logout = () => {
-    localStorage.setItem("isAuthenticated", "false");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("isAuthenticated", "false");
+      localStorage.removeItem("user");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("lastActive");
+    }
     setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("lastActive");
+    setIsAuthenticated(false);
   };
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   return (
-    <AuthContext.Provider value={{ login, logout, isAuthenticated, user, isLoading }}> 
+    <AuthContext.Provider value={{ login, logout, isAuthenticated, user, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
